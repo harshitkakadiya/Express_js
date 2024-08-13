@@ -20,7 +20,7 @@ app.post("/product", (req, res) =>{
 });
 
 // Ger All Product - Read
-app.get(".product", (req, res) => {
+app.get("/product", (req, res) => {
     res.json(products);
 })
 
@@ -29,6 +29,36 @@ app.get("/product/:id",(req,res)  => {
     let id = +req.params.id;
     let item = products.find((product)=>product.id === id)
     res.json(item);
+});
+
+// Replace Data -PUT
+app.put("/product/:id", (req, res) => {
+    let id = +req.params.id;
+    let productIndex = products.findIndex((product) => product.id === id);
+    // console.log(productIndex);
+    products.splice(productIndex, 1, { ...req.body});
+    res.json({ message: "Product Replace Success"});
+});
+
+// Upadate Data -PATCH
+app.patch("/product/:id", (req, res) => {
+    let id = +req.params.id;
+    let productIndex = products.findIndex((product) => product.id === id);
+    // console.log(productIndex);
+    const product = products[productIndex];
+    // console.log(product);
+    products.splice(productIndex, 1, {...product, ...req.body});
+    res.json({ message: "Product Update Success"});
+});
+
+// Delet Data -DELETE
+app.delete("/product/:id", (req, res) => {
+    let id = +req.params.id;
+    let productIndex = products.findIndex((product) => product.id === id);
+    const product = products[productIndex];
+    // console.log(product);
+    products.splice(productIndex, 1);
+    res.json({ message: "Product DELETE Success"});
 });
 
 app.listen(1234, ()=> {
