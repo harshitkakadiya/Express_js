@@ -1,38 +1,17 @@
-const user = require('../user.json');
+const express = require('express');
 
-exports.getUser = (req, res) => {
-    res.json(user);
-};
+const userRoutes = express();
 
-exports.addUser = (req,res) => {
-    user.push(req.body);
-    res.json({message : 'user add successfully'});
-};
+const {
+    getUser,
+    addUser,
+    // getSingleUser
+} = require('../controller/user.controller');
 
-exports.replaceUser = (req,res) => {
-    let id = +req.params.id;
-    let userIndex = user.findIndex((user) => user.id === id);
-    user.splice(userIndex, 1, {...req.body});
-    res.json({message : 'user replace successfully'});
-};
+userRoutes.get('/', getUser);
 
-exports.updateUser = (req,res) => {
-    let id = +req.params.id;
-    let userIndex = user.findIndex((user) => user.id === id);
-    let users = user[userIndex];
-    user.splice(userIndex, 1, {...users,...req.body});
-    res.json({message : 'user update successfully'});
-};
+userRoutes.post('/', addUser);
 
-exports.deleteUser = (req,res) => {
-    let id = +req.params.id;
-    let userIndex = user.findIndex((user) => user.id === id);
-    user.splice(userIndex , 1);
-    res.json({message : 'user delete successfully'});
-};
 
-exports.getSingleUser = (req,res) => {
-    let id = +req.params.id;
-    let users = user.find((user) => user.id === id);
-    res.json(users);
-};
+
+module.exports = userRoutes;
