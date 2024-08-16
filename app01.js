@@ -25,3 +25,4 @@ server.use('/api/user', userRoutes);
 server.listen(8000,()=>{
     console.log(`Server is running on port http://localhost:8000`);  
 });
+
