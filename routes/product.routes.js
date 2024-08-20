@@ -1,11 +1,10 @@
-
 const express = require('express');
 
-const productRoutes = express();
+const productRoutes = express.Router();
 
 const {
     addProduct,
-    replaceProduct,
+    // replaceProduct,
     updateProduct,
     deleteProduct,
     getProduct ,
@@ -14,14 +13,14 @@ const {
 
 productRoutes.post('/', addProduct);
 
-productRoutes.put('/:id', replaceProduct);
+// productRoutes.put('/:id', replaceProduct);
 
-productRoutes.patch('/:id', updateProduct);
+productRoutes.patch('/', updateProduct);
 
-productRoutes.delete('/:id', deleteProduct);
+productRoutes.delete('/', deleteProduct);
 
 productRoutes.get('/', getProduct);
 
-productRoutes.get('/:id', getSingleProduct);
+productRoutes.get('/get-product', getSingleProduct);
 
 module.exports = productRoutes;

@@ -45,3 +45,36 @@ exports.getUser = async (req, res)=>{
         res.status(500).json({ message: "Internal Server Error"});
     }
 };
+
+// Update User
+
+exports.updateUser = async (req, res)=>{
+    try {
+        let user = await User.findById(req.query.userId);
+        if(!user){
+            return res.status(400).json({message: 'User Nit Found'});
+    }
+    user = await User.findByIdUpdate(req.query.userId, {$set:req.body}, {new: true});
+    user.save();
+    res.status(202).json({user,messge: 'User Update Success'})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error"});
+    }
+};
+
+// Delet User
+
+exports.deleteUser = async (req, res)=>{
+    try {
+        let user = await User.findById(req.query.userId);
+        if(!user){
+            return res.status(400).json({message: 'User Nit Found'});
+    }
+    user = await User.findByIdAndDelete(user._id);
+    res.status(202).json({user,messge: 'User Update Success'})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error"});
+    }
+};
