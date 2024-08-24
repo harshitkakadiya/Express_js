@@ -1,78 +1,82 @@
-const Product = require('../model/product.model');
+// product add   /// connect with database
 
-exports.addProduct = async (req, res) => {
-    try {
-        const { productName, image, title, price, description, manufacture_By } = req.body;
-        let product = await Product.findOne({ _id: req.body.id}, {isDelete: false });
-        if (product) res.status(500).json({ message: 'product already exists...' });
-        product = await Product.create({ productName, image, title, price, description, manufacture_By });
-        product.save();
-        res.status(201).json({ message: 'product add successfully...' });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'internal server error...' });
-    }
+const Product = require("../model/product.model");
+
+exports.addNewProduct = async (req,res) =>{
+  try{
+    // console.log(req.body);
+    const {productName , title , price , discription , rating , othersProducts ,image} = req.body;
+    let product = await Product.findOne({productName :productName});
+    if(product)
+      return res.status(400).json({message : "Product Already Exist.."});
+    product = await Product.create({
+      productName , title , price , discription , rating , othersProducts ,image
+    });
+    res.status(201).json({product , message : "Product added"})
+  }catch(error){
+    console.log(error);
+    res.status(500).json({message : "Internal Server Error"})
+    
+  }
 };
 
-exports.getProduct = async (req, res) => {
-    try {
-        let product = await Product.find({ isDelete: false });
-        res.status(200).json(product);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'internal server error...' });
-    }
+// Get All Product
+exports.getAllProduct = async (req ,res) =>{
+  try{
+    let product = await Product.find();
+    res.status(200).json(product);
+  }catch(error){
+    console.log(error);
+    res.status(500).json({message : "Internal Server Error"})
+  }
 };
 
-exports.getSingleProduct = async (req, res) => {
-    try {
-        let product = await Product.findOne({ _id: req.query.id }, { isDelete: false });
-        if (!product) return res.status(404).json({ message: 'product not found...' });
-        res.status(200).json(product);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'internal server error...' });
-    }
+// Get Single Product
+exports.getProduct = async (req ,res) =>{
+  try{
+    // let product = await Product.findOne({_id :req.query.userId});
+    let product = await Product.findById(req.query.userId); 
+    if(!product)
+      return res.status(404).json({message : "Product Not Found"});
+    res.status(200).json(product)
+  }catch (error){
+    console.log(error);
+    res.status(500).json({message : "Internal Server Error"})
+  }
 };
 
-exports.updateProduct = async (req, res) => {
-    try {
-        let product = await Product.findOne({ _id: req.query.id }, { isDelete: false });
-        if (!product) return res.status(404).json({ message: 'product not found...' });
-        // product = await Product.updateOne({ _id: req.query.id }, { $set: req.body }, { new: true });
-        // product = await Product.findByIdAndDelete(req.query.id, { $set: req.body }, { new: true });
-        // product.save();
-        res.status(200).json({ product, message: 'product update successfully...' });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'internal server error...' });
+// Update Product
+exports.updateProduct = async (req ,res) =>{
+  try{
+    let product = await Product.findById(req.query.productId);
+    if(!product){
+      return res.status(404).json({message : "Product Not Found...."})
     }
-};
+    // product = await Product.updateOne({_id:req.query.prodcutId} , {$set :req.body} , {new : true})
+    product = await Product.findByIdAndUpdate(req.query.productId, {$set :req.body} , {new : true});
+    product.save();
+    res.status(202).json({product , message : "Product Update Success"});
+  }catch(error){
+    console.log(error);
+    res.status(500).json({message : "Internal Server Error"})
+    
+  }
+}
 
-// --- hard delete
-// exports.deleteProduct = async (req, res) => {
-//     try {
-//         let product = await Product.findById(req.query.id);
-//         if (!product) return res.status(404).json({ message: 'product not found...' });
-//         // product = await Product.deleteOne({ _id: req.query.id });
-//         // product = await Product.findByIdAndDelete(product._id);
-//         // res.status(200).json({message: 'user deleted successfully...'});
-//         res.status(200).json({ message: 'product delete success...' });
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ message: 'internal server error...' });
-//     }
-// };
-
-// --- soft delete
-exports.deleteProduct = async (req, res) => {
-    try {
-        let product = await Product.findOne({ _id: req.query.id }, { isDelete: false });
-        if (!product) return res.status(404).json({ message: 'product not found...' });
-        product = await Product.updateOne({ _id: req.query.id }, { $set: { isDelete: true } }, { new: true });
-        res.status(200).json({ message: 'product delete successfully...' });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'internal server error...' });
+// Delete Product
+exports.deleteProduct = async (req ,res) =>{
+  try{
+    let product = await Product.findById(req.query.productId);
+    if(!product){
+      return res.status(404).json({message : "Product Not Found...."})
     }
-};
+    // product = await Product.deleteOne({_id : product._id});
+    product = await Product.findByIdAndDelete(product._id);
+    res.status(200).json({product  , message : "Product Delete Success"})
+  }catch(error){
+    console.log(error);
+    res.status(500).json({message : "Internal Server Error"});
+  }
+}
+
+

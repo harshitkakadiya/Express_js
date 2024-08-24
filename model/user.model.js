@@ -1,33 +1,40 @@
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
-    firstName: {
-        type: String,
-        required: true
+    firstName : String,
+    lastName : {
+        type : String,
     },
-    lastName: {
-        type: String,
-        required: true
+    email : {
+        type : String,
+        // unique : true
     },
-    email: {
-        type: String,
-        required: true
+    password : {
+        type : String
     },
-    age: Number,
-    password: String,
-    addresss: {
+    mobileNo : {
+        type : String
+    },
+    age : {
+        type : Number
+    },
+    profileImage :{
+        type : String
+    },
+    address : {
         line1: String,
         line2: String,
         pincode: Number
     },
-    isDelete: {
-        type: Boolean,
-        default: false
+    isDelete :{
+        type : Boolean,
+        default : false
     }
 },
-    {
-        versionKey: false,
-        timestamps: true
-    });
+{
+    versionKey : false,
+    timestamps : true
+}
+);
 
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('users' , userSchema);

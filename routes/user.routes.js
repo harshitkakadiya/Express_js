@@ -1,13 +1,16 @@
 const express = require('express');
-const { addNewUser, getAllUser, getUser } = require('../controller/user.controller');
+const {registerUser , loginUser , userProfile, updateUser , deleteUser , changePassword} = require('../controller/user.controller');
+const { verifyToken } = require('../helpers/tokenVerify');
+
 const userRoutes = express.Router();
 
-// userRoutes.post("/", addNewUser);
-// userRoutes.post("/", getAllUser);
-// userRoutes.post("/get-user", getUser);
-// userRoutes.post("/get-user",updateUser)
-// userRoutes.post("/",deleteUser)
-userRoutes.post("/register",registration)
-userRoutes.post("/login",login)
+userRoutes.post("/register" , registerUser);
+userRoutes.post("/login" , loginUser);
+
+userRoutes.get("/me" , verifyToken ,  userProfile);
+userRoutes.put("/update-profile" , verifyToken ,  updateUser);
+userRoutes.delete("/delete-profile" , verifyToken ,  deleteUser);
+userRoutes.post("/change-password" , changePassword);
+
 
 module.exports = userRoutes;

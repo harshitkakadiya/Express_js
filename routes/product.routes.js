@@ -1,26 +1,17 @@
+
+// Product add User ... connect with database;
+
 const express = require('express');
+const {addNewProduct , getAllProduct , getProduct , updateProduct , deleteProduct} = require('../controller/product.controller');
+const ProductRoutes = express.Router();
 
-const productRoutes = express.Router();
+ProductRoutes.post("/" , addNewProduct);
+ProductRoutes.get("/" , getAllProduct);
+ProductRoutes.get("/get-product" , getProduct);
+ProductRoutes.put("/" , updateProduct);
+ProductRoutes.delete("/" , deleteProduct);
 
-const {
-    addProduct,
-    // replaceProduct,
-    updateProduct,
-    deleteProduct,
-    getProduct ,
-    getSingleProduct
-} = require('../controller/product.controller');
 
-productRoutes.post('/', addProduct);
+module.exports = ProductRoutes;
 
-// productRoutes.put('/:id', replaceProduct);
 
-productRoutes.patch('/', updateProduct);
-
-productRoutes.delete('/', deleteProduct);
-
-productRoutes.get('/', getProduct);
-
-productRoutes.get('/get-product', getSingleProduct);
-
-module.exports = productRoutes;
