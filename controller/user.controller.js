@@ -1,101 +1,111 @@
-const User = require("../model/user.model");
+const User = require('../model/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-//Registration
-exports.registerUser = async (req , res) =>{
+exports.userLogin = async (req, res) => {
     try {
-      let imegePath = "";
-        let user = await User.findOne({email : req.body.email , isDelete: false});
-        if(user){
-            return res.status(400).json({message : "User Alredy Exist....."});
-        }
-        if(req.file){
-          // console.log(req.file.path);
-          imegePath = req.file.path.replace(/\\/g, "/");
-        }
-        let hashPassword = await bcrypt.hash(req.body.password , 10);
-        // console.log(hashPassword);
-        user = await User.create({...req.body , password : hashPassword , profileImage : imegePath });
-        user.save();
-        res.status(201).json({user , message : "User Registration Success"})
+        let user = await User.findOne({ email: req.body.email, isDelete: false });
+        if (!user) return res.status(404).json({ message: 'user not found...' });
+        let matchpassword = await bcrypt.compare(req.body.password, user.password);
+        if (!matchpassword) return res.status(400).json({ message: 'email or password incorrect...' });
+        let token = await jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+        // console.log(token);      
+        res.status(200).json({ message: 'login successs...', token });
     } catch (error) {
         console.log(error);
-        res.json(500).json({message : "Internal Server Error"})
+        res.status(500).json({ message: 'internal server error...' });
     }
-}
+};
 
-//Login
-exports.loginUser = async (req ,res) =>{
-  try {
-    let user = await User.findOne({email : req.body.email , isDelete : false});
-    if(!user){
-       return res.status(404).json({message : "User Not Found"});
+exports.userRegistration = async (req, res) => {
+    try {
+        let imagepath = "";
+        let user = await User.findOne({ email: req.body.email, isDelete: false });
+        if (user) {
+            return res.status(400).json({ message: 'user already exists...' });
+        }
+            if (req.file) { imagepath = req.file.path.replace(/\\/g, '/') };
+            let hashpasssword = await bcrypt.hash(req.body.password, 10);
+            user = await User.create({ ...req.body, password: hashpasssword , profileImage: imagepath });
+            res.status(201).json({ message: 'user registration successfully...' });
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'internal server error...' });
     }
-    let matchPassword = await bcrypt.compare(req.body.password , user.password);
-    // console.log(matchPassword);
-    if(!matchPassword){
-        return res.status(400).json({message : "Email Or Password Not metched...."})
+};
+
+exports.userProfile = async (req, res) => {
+    try {
+        res.status(200).json(req.user);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'internal server error...' });
     }
-    let token = await jwt.sign({userId : user._id} , process.env.JWT_SECRET ,);
-    res.status(200).json({message : "Login Success" , token})
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({message : "Internal Server Error"})
-  }
-}
+};
 
-exports.userProfile = async (req ,res) =>{
-  try {
-    res.status(200).json(req.user)
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({message : "Internal server Error"})
-  }
-}
+exports.getUser = async (req, res) => {
+    try {
+        let user = await User.find({ isDelete: false });
+        res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'internal server error...' });
+    }
+};
 
-// Update User
-exports.updateUser = async (req ,res) =>{
-  try {
-    let user = req.user;
-    user = await User.findByIdAndUpdate(user._id , {$set : req.body} , {new : true});
-    res.status(202).json({user , message : "User Update Success"})
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({message : "Internal Server Error"})
-  }
-}
+exports.updateUser = async (req, res) => {
+    try {
+        let user = req.user;
+        let imagepath = '';
+        if (req.file) { imagepath = req.file.path.replace(/\\/g, '/') };
+        user = await User.findByIdAndUpdate(user._id, { $set: req.body }, { new: true });
+        res.status(200).json({ user, message: 'user update successfully...' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'internal server error...' });
+    }
+};
 
-// delete user
-exports.deleteUser = async (req , res) =>{
-  try {
-    let user = req.user;
-    user = await User.findByIdAndUpdate(user._id , {$set : {isDelete: true}} , {new : true});
-    res.status(202).json({user , message : "User Delete Success"})
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({message : "Internal Server Error....."});
-  }
-}
-
-// Change Password 
 exports.changePassword = async (req, res) => {
-  try {
-      const { email, oldPassword, newPassword} = req.body;
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-      const isMatch = await bcrypt.compare(oldPassword, user.password);
-      if (!isMatch) {
-          return res.status(400).json({ message: 'Incorrect old password' });
-      }
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
-      await user.save();
-      res.json({ message: 'Password changed successfully' });
-  } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Internal Server Error" })
-  }
-}
+    try {
+        const { currentpassword, newpassword, confirmpassword } = req.body;
+        let user = req.user;
+        if (!currentpassword || !newpassword || !confirmpassword) return res.json({ message: 'provide all passwords...' });
+        if (newpassword !== confirmpassword) return res.json({ message: 'confirmpassword not matched...' });
+        let matchpassword = await bcrypt.compare(currentpassword, user.password);
+        if (!matchpassword) return res.status(400).json({ message: 'Incorrect currentpassword...' });
+        let hashpasssword = await bcrypt.hash(newpassword, 10);
+        user = await User.findByIdAndUpdate(user._id, { $set: { password: hashpasssword } }, { new: true });
+        res.status(200).json({ message: 'password changed successfully...' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'internal server error...' });
+    }
+};
+
+// --- hard delete
+// exports.deleteUser = async (req, res) => {
+//     try {
+//         let user = await User.findById(req.query.id);
+//         if (!user) return res.status(404).json({ message: 'user not found...' });
+//         // user = await User.deleteOne({ _id: req.query.id });
+//         // user = await User.findByIdAndDelete(user._id);
+//         // res.status(200).json({ message: 'user deleted successfully...' });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ message: 'internal server error...' });
+//     }
+// };
+
+// --- soft delete
+exports.deleteUser = async (req, res) => {
+    try {
+        let user = req.user;
+        user = await User.findByIdAndUpdate(user._id, { $set: { isDelete: true } }, { new: true });
+        res.status(200).json({ message: 'user deleted successfully...' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'internal server error...' });
+    }
+};

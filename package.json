@@ -1,10 +1,10 @@
 {
-  "name": "express",
+  "name": "l1",
   "version": "1.0.0",
-  "main": "lecture_4.js",
+  "main": "es.js",
   "scripts": {
-    "start": "node Express.js",
-    "dev": "nodemon Express.js"
+    "start": "node es.js",
+    "dev": "nodemon es.js"
   },
   "author": "",
   "license": "ISC",

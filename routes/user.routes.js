@@ -1,17 +1,31 @@
 const express = require('express');
-const {registerUser , loginUser , userProfile, updateUser , deleteUser , changePassword} = require('../controller/user.controller');
-const { verifyToken } = require('../helpers/tokenVerify');
-const {upload} = require("../helpers/imageUpload")
 
 const userRoutes = express.Router();
 
-userRoutes.post("/register" , upload.single('profileImage') , registerUser);
-userRoutes.post("/login" , loginUser);
+const {
+    userLogin,
+    userRegistration,
+    userProfile,
+    getUser,
+    updateUser,
+    changePassword,
+    deleteUser,
+} = require('../controller/user.controller');
+const { verifyToken } = require('../helper/tokenVerify');
+const { upload } = require('../helper/uploadImage');
 
-userRoutes.get("/me" , verifyToken ,  userProfile);
-userRoutes.put("/update-profile" , verifyToken ,  updateUser);
-userRoutes.delete("/delete-profile" , verifyToken ,  deleteUser);
-userRoutes.post("/change-password" , changePassword);
+userRoutes.post('/login', userLogin)
 
+userRoutes.post('/reg', upload.single('profileImage'), userRegistration);
+
+userRoutes.get("/getuser", verifyToken, userProfile)
+
+userRoutes.get('/getalluser', getUser);
+
+userRoutes.patch('/updateuser', verifyToken, updateUser);
+
+userRoutes.post('/changepassword', verifyToken, changePassword);
+
+userRoutes.delete('/deleteuser', verifyToken, deleteUser);
 
 module.exports = userRoutes;
