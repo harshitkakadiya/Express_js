@@ -11,7 +11,7 @@ const productSchema = mongoose.Schema({
         required: true
     },
     price: {
-        type: Number,
+        type: String,
         required: true
     },
     description: {
@@ -21,6 +21,7 @@ const productSchema = mongoose.Schema({
         line1: String,
         line2: String,
         pincode: Number
+        
     },
     isDelete: {
         type: Boolean,

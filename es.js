@@ -16,8 +16,8 @@ server.use("uploadImages", express.static(path.join(__dirname, 'uploadImages')))
 
 const mongoose = require('mongoose');
 mongoose
-    // .connect('mongodb://localhost:27017/product')
-    .connect(URL)
+    .connect('mongodb://localhost:27017/product')
+    // .connect(URL)
     .then(() => console.log(`Database connect successfully`))
     .catch(err => console.log(err))
 server.use(express.json());

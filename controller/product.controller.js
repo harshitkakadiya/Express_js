@@ -3,7 +3,7 @@ const Product = require('../model/product.model');
 exports.addProduct = async (req, res) => {
     try {
         const { productName, image, title, price, description, manufacture_By } = req.body;
-        let product = await Product.findOne({ _id: req.body.id, isDelete: false });
+        let product = await Product.findOne({ _id: req.body.id}, {isDelete: false });
         if (product) res.status(500).json({ message: 'product already exists...' });
         product = await Product.create({ productName, image, title, price, description, manufacture_By });
         product.save();
@@ -76,12 +76,3 @@ exports.deleteProduct = async (req, res) => {
         res.status(500).json({ message: 'internal server error...' });
     }
 };
-
-exports.registration = async (req,res) => {
-    try { 
-        
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'internal server error...'});
-    }
-}
