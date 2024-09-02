@@ -30,6 +30,7 @@ server.get('/', (req, res) => {
 server.use('/api/product', productRoutes);
 server.use('/api/user', userRoutes);
 server.use('/api/cart', cartRoutes)
+server.use('/api/order', orderRoutes);
 
 server.listen(port, () => {
     console.log(`Server is running on port http://localhost:${port}`);
