@@ -7,6 +7,7 @@ URL = process.env.MONGO_URL
 const productRoutes = require('./routes/product.routes');
 const userRoutes = require('./routes/user.routes');
 const cartRoutes = require('./routes/cart.routes');
+const orderRoutes = require('./routes/order.routes');
 
 const morgan = require('morgan');
 server.use(morgan('dev'));
